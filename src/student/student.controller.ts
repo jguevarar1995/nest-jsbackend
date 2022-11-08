@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Delete, HttpException, HttpStatus, UsePipes, ValidationPipe } from '@nestjs/common';
 import { StudentDto } from './dto/student.dto';
 import { StudentService } from './student.service';
 
 @Controller('student')
 export class StudentController {
 
-    constructor(private readonly studentService: StudentService) {}
-    
+    constructor(private readonly studentService: StudentService) { }
+
     @Get()
     async getAll() {
         return await this.studentService.getAll();
@@ -17,19 +17,15 @@ export class StudentController {
         return await this.studentService.findById(id);
     }
 
+    @UsePipes(new ValidationPipe({ whitelist: true }))
     @Post()
     async create(@Body() dto: StudentDto) {
-        return await this.studentService.create(dto).catch( err => {
-            throw new HttpException({
-                message: err.message
-              }, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        ); 
+        return await this.studentService.create(dto);
     }
 
     @Put(':id')
     async update(@Param('id', ParseIntPipe) id: number, @Body() dto: StudentDto) {
-        return await this.studentService.update(id, dto); 
+        return await this.studentService.update(id, dto);
     }
 
     @Delete(':id')
