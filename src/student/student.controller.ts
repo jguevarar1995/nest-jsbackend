@@ -20,7 +20,12 @@ export class StudentController {
     @UsePipes(new ValidationPipe({ whitelist: true }))
     @Post()
     async create(@Body() dto: StudentDto) {
-        return await this.studentService.create(dto);
+        return await this.studentService.create(dto).catch(err => {
+            throw new HttpException({
+                message: err.message
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        );
     }
 
     @Put(':id')
