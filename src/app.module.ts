@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } from './config/constants';
 import { StudentModule } from './student/student.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { StudentModule } from './student/student.module';
       }),
       inject: [ConfigService],
     }),
-    StudentModule
+    StudentModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
