@@ -48,17 +48,6 @@ export class StudentService {
         const updatedBody = Object.assign(student, dto);
         await this.studentRepository.save(updatedBody);
         return new MessageDto(`Estudiante ${student.first_name} ${student.last_name} actualizado`);
-        /*//implementar Object.assign() para evitar reescritura de atributos uno a uno
-        dto.doc_number? student.doc_number = dto.doc_number : student.doc_number = student.doc_number;
-        dto.first_name? student.first_name = dto.first_name : student.first_name = student.first_name;
-        dto.last_name? student.last_name = dto.last_name : student.last_name = student.last_name;
-        dto.email? student.email = dto.email : student.email = student.email;
-        dto.phone? student.phone = dto.phone : student.phone = student.phone;
-        dto.grade? student.grade = dto.grade : student.grade = student.grade;
-        dto.course? student.grade = dto.grade : student.grade = student.grade;
-        dto.score? student.score = dto.score : student.score = student.score;
-        await this.studentRepository.save(student);
-        return { message: `Estudiante ${student.first_name} ${student.last_name} actualizado` };*/
 
     }
 

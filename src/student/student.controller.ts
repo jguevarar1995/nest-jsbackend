@@ -9,18 +9,18 @@ export class StudentController {
 
     @Get()
     async getAll() {
-        return await this.studentService.getAll();
+        return this.studentService.getAll();
     }
 
     @Get(':id')
     async getOne(@Param('id', ParseIntPipe) id: number) {
-        return await this.studentService.findById(id);
+        return this.studentService.findById(id);
     }
 
     @UsePipes(new ValidationPipe({ whitelist: true }))
     @Post()
     async create(@Body() dto: StudentDto) {
-        return await this.studentService.create(dto).catch(err => {
+        return this.studentService.create(dto).catch(err => {
             throw new HttpException({
                 message: err.message
             }, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -30,11 +30,11 @@ export class StudentController {
 
     @Put(':id')
     async update(@Param('id', ParseIntPipe) id: number, @Body() dto: StudentDto) {
-        return await this.studentService.update(id, dto);
+        return this.studentService.update(id, dto);
     }
 
     @Delete(':id')
     async delete(@Param('id', ParseIntPipe) id: number) {
-        return await this.studentService.deleteById(id);
+        return this.studentService.deleteById(id);
     }
 }

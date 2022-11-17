@@ -1,4 +1,3 @@
-import { Transform, TransformFnParams } from "class-transformer";
 import { IsEmail, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from "class-validator";
 import { IsNotBlank } from "src/decorators/is-not-blank.decorator";
 

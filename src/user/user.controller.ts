@@ -11,6 +11,6 @@ export class UserController {
     @Post()
     @HttpCode(HttpStatus.OK)
     async doLogin(@Body() dto: UserDto): Promise<any> {
-        return await this.userService.performLogin(dto);
+        return this.userService.performLogin(dto);
     }
 }

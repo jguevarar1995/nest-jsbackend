@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsOptional, IsString } from "class-validator";
 import { IsNotBlank } from "src/decorators/is-not-blank.decorator";
 
 export class UserDto {
