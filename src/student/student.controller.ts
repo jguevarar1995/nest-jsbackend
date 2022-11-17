@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Delete, HttpExce
 import { StudentDto } from './dto/student.dto';
 import { StudentService } from './student.service';
 
-@Controller('student')
+@Controller('api/v1/student')
 export class StudentController {
 
     constructor(private readonly studentService: StudentService) { }

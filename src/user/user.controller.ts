@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe, HttpStatus 
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('api/v1/login')
 export class UserController {
 
     constructor(private readonly userService: UserService) { }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageDto } from 'src/common/message.dto';
 import { UserDto } from './dto/user.dto';
@@ -23,9 +23,9 @@ export class UserService {
         if (user) {
             if (dto.password === user.pass) {
                 const obj = (({ pass, ...o }) => o) (user);
-                return { message: "Login exitoso!", data: obj};
+                return { message: "Login exitoso!", status: 200, data: obj};
             } else {
-                throw new BadRequestException(new MessageDto('Usuario o contraseña no válidos'));
+                throw new UnauthorizedException(new MessageDto('Usuario o contraseña no válidos'));
             }
         } else {
             throw new NotFoundException(new MessageDto('No existe el usuario'));
