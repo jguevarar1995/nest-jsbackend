@@ -35,4 +35,4 @@ CREATE TABLE IF NOT EXISTS `users`(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO users (email, pass, role_id)
-VALUES ('jguevarar1@ucentral.edu.co', SHA2('Judas_Maiden0109', 256), 1);
+VALUES ('YOUR_EMAIL_HERE', SHA2('YOUR_PASSWORD_HERE', 256), 1);
