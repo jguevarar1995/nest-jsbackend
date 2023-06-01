@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageDto } from 'src/common/message.dto';
 import { UserDto } from './dto/user.dto';
@@ -7,28 +11,30 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: UserRepository,
+  ) {}
 
-    constructor(
-        @InjectRepository(UserEntity)
-        private userRepository: UserRepository
-    ) { }
+  async findByEmail(email: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({ email: email });
+    return user;
+  }
 
-    async findByEmail(email: string): Promise<UserEntity> {
-        const user = await this.userRepository.findOneBy({ email: email });
-        return user;
+  async performLogin(dto: UserDto): Promise<any> {
+    const user = await this.findByEmail(dto.email);
+    if (user) {
+      if (dto.password === user.pass) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const obj = (({ pass, ...o }) => o)(user);
+        return { message: 'Login exitoso!', status: 200, user: obj };
+      } else {
+        throw new UnauthorizedException(
+          new MessageDto('Usuario o contraseña no válidos'),
+        );
+      }
+    } else {
+      throw new NotFoundException(new MessageDto('No existe el usuario'));
     }
-
-    async performLogin(dto: UserDto): Promise<any> {
-        const user = await this.findByEmail(dto.email);
-        if (user) {
-            if (dto.password === user.pass) {
-                const obj = (({ pass, ...o }) => o) (user);
-                return { message: "Login exitoso!", status: 200, data: obj};
-            } else {
-                throw new UnauthorizedException(new MessageDto('Usuario o contraseña no válidos'));
-            }
-        } else {
-            throw new NotFoundException(new MessageDto('No existe el usuario'));
-        }
-    }
+  }
 }
