@@ -26,6 +26,8 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+Please, run the base.sql file scripts inside sql folder before running server.
+
 ## Installation
 
 ```bash
