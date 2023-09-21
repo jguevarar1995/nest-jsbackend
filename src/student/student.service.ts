@@ -32,15 +32,15 @@ export class StudentService {
     return student;
   }
 
-  async findByDocumentNumber(doc_number: number): Promise<StudentEntity> {
+  async findByDocumentNumber(docNumber: number): Promise<StudentEntity> {
     const student = await this.studentRepository.findOneBy({
-      doc_number: doc_number,
+      docNumber: docNumber,
     });
     return student;
   }
 
   async create(dto: StudentDto): Promise<any> {
-    const exists = await this.findByDocumentNumber(dto.doc_number);
+    const exists = await this.findByDocumentNumber(dto.docNumber);
     if (exists)
       throw new BadRequestException(
         new MessageDto('Ya existe el número de documento'),
@@ -48,7 +48,7 @@ export class StudentService {
     const student = this.studentRepository.create(dto);
     await this.studentRepository.save(student);
     return new MessageDto(
-      `Estudiante ${student.first_name} ${student.last_name} creado`,
+      `Estudiante ${student.firstName} ${student.lastName} creado`,
     );
   }
 
@@ -59,7 +59,7 @@ export class StudentService {
     const updatedBody = Object.assign(student, dto);
     await this.studentRepository.save(updatedBody);
     return new MessageDto(
-      `Estudiante ${student.first_name} ${student.last_name} actualizado`,
+      `Estudiante ${student.firstName} ${student.lastName} actualizado`,
     );
   }
 
@@ -67,7 +67,7 @@ export class StudentService {
     const student = await this.findById(id);
     await this.studentRepository.delete(student);
     return new MessageDto(
-      `Estudiante ${student.first_name} ${student.last_name} eliminado`,
+      `Estudiante ${student.firstName} ${student.lastName} eliminado`,
     );
   }
 }

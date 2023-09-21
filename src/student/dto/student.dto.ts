@@ -13,19 +13,18 @@ export class StudentDto {
   @IsNumber()
   @IsNotEmpty()
   @Max(9999999999)
-  doc_number: number;
+  docNumber: number;
 
   @IsString()
   @IsNotBlank({ message: 'First name should not be blank' })
   //@IsNotEmpty()
   //@Transform(({ value }: TransformFnParams) => value?.trim())
-  first_name: string;
-
+  firstName: string;
   @IsString()
   @IsNotBlank({ message: 'Last name should not be blank' })
   //@IsNotEmpty()
   //@Transform(({ value }: TransformFnParams) => value?.trim())
-  last_name: string;
+  lastName: string;
 
   @IsString()
   @IsNotBlank({ message: 'Email should not be blank' })

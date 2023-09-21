@@ -6,13 +6,13 @@ export class StudentEntity {
   id: number;
 
   @Column({ type: 'int', nullable: false, unique: true })
-  doc_number: number;
+  docNumber: number;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  first_name: string;
+  firstName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  last_name: string;
+  lastName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
   email: string;
