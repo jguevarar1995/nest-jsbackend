@@ -17,26 +17,19 @@ export class StudentDto {
 
   @IsString()
   @IsNotBlank({ message: 'First name should not be blank' })
-  //@IsNotEmpty()
-  //@Transform(({ value }: TransformFnParams) => value?.trim())
   firstName: string;
+
   @IsString()
   @IsNotBlank({ message: 'Last name should not be blank' })
-  //@IsNotEmpty()
-  //@Transform(({ value }: TransformFnParams) => value?.trim())
   lastName: string;
 
   @IsString()
   @IsNotBlank({ message: 'Email should not be blank' })
-  //@IsNotEmpty()
-  //@Transform(({ value }: TransformFnParams) => value?.trim())
   @IsEmail()
   email: string;
 
   @IsString()
   @IsNotBlank({ message: 'Phone should not be blank' })
-  //@IsNotEmpty()
-  //@Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(7, 10)
   phone: string;
 
@@ -48,8 +41,6 @@ export class StudentDto {
 
   @IsString()
   @IsNotBlank({ message: 'Course should not be blank' })
-  //@IsNotEmpty()
-  //@Transform(({ value }: TransformFnParams) => value?.trim())
   course: string;
 
   @IsNumber()

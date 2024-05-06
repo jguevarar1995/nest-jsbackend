@@ -5,13 +5,13 @@ export class StudentEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int', nullable: false, unique: true })
+  @Column({ type: 'int', name: 'doc_number', nullable: false, unique: true })
   docNumber: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', name: 'first_name', length: 255, nullable: false })
   firstName: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', name: 'last_name', length: 255, nullable: false })
   lastName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false, unique: true })

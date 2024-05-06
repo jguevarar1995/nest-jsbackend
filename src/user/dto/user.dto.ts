@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { IsNotBlank } from 'src/decorators/is-not-blank.decorator';
 
@@ -12,5 +13,6 @@ export class UserDto {
   password: string;
 
   @IsOptional()
-  role_id?: number;
+  @Transform((value) => value, { toPlainOnly: true })
+  roleId?: number;
 }

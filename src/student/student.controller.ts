@@ -7,8 +7,6 @@ import {
   Post,
   Put,
   Delete,
-  HttpException,
-  HttpStatus,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -32,14 +30,7 @@ export class StudentController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   @Post()
   async create(@Body() dto: StudentDto) {
-    return this.studentService.create(dto).catch((err) => {
-      throw new HttpException(
-        {
-          message: err.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    });
+    return this.studentService.create(dto);
   }
 
   @Put(':id')

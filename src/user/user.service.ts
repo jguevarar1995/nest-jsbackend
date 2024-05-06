@@ -1,40 +1,41 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MessageDto } from 'src/common/message.dto';
 import { UserDto } from './dto/user.dto';
 import { UserEntity } from './user.entity';
-import { UserRepository } from './user.repository';
+import { Repository } from 'typeorm';
+import { ResponseHandler } from 'src/common/response.handler';
+import { ConstantsMessages } from 'src/config/constants.messages';
 
 @Injectable()
-export class UserService {
+export class UserService extends Repository<UserEntity> {
   constructor(
     @InjectRepository(UserEntity)
-    private userRepository: UserRepository,
-  ) {}
-
-  async findByEmail(email: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ email: email });
-    return user;
+    private userRepository: Repository<UserEntity>,
+    private responseHandler: ResponseHandler,
+  ) {
+    super(
+      userRepository.target,
+      userRepository.manager,
+      userRepository.queryRunner,
+    );
   }
 
   async performLogin(dto: UserDto): Promise<any> {
-    const user = await this.findByEmail(dto.email);
-    if (user) {
-      if (dto.password === user.pass) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const obj = (({ pass, ...o }) => o)(user);
-        return { message: 'Login exitoso!', status: 200, user: obj };
-      } else {
-        throw new UnauthorizedException(
-          new MessageDto('Usuario o contraseña no válidos'),
-        );
-      }
-    } else {
-      throw new NotFoundException(new MessageDto('No existe el usuario'));
+    const user = await this.userRepository.findOneBy({ email: dto.email });
+    if (!user || dto.password !== user.pass) {
+      return this.responseHandler.handleFailure(
+        ConstantsMessages.UNAUTHORIZED_LOGIN,
+        HttpStatus.UNAUTHORIZED,
+        UnauthorizedException,
+      );
     }
+    const userWithoutPassword = Object.assign({}, user);
+    delete userWithoutPassword.pass;
+
+    return this.responseHandler.handleSuccess(
+      ConstantsMessages.STATUS_OK,
+      HttpStatus.OK,
+      userWithoutPassword,
+    );
   }
 }

@@ -11,6 +11,6 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   pass: string;
 
-  @Column({ type: 'int', nullable: false })
-  role_id: number;
+  @Column({ type: 'int', name: 'role_id', nullable: false })
+  roleId: number;
 }

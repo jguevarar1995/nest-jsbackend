@@ -1,38 +1,64 @@
 import {
-  BadRequestException,
+  HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MessageDto } from 'src/common/message.dto';
 import { StudentDto } from './dto/student.dto';
 import { StudentEntity } from './student.entity';
-import { StudentRepository } from './student.repository';
+import { Repository } from 'typeorm';
+import { ResponseHandler } from 'src/common/response.handler';
+import { ConstantsMessages } from 'src/config/constants.messages';
 
 @Injectable()
-export class StudentService {
+export class StudentService extends Repository<StudentEntity> {
   constructor(
     @InjectRepository(StudentEntity)
-    private studentRepository: StudentRepository,
-  ) {}
-
-  async getAll(): Promise<StudentEntity[]> {
-    const list = await this.studentRepository.find();
-    if (!list.length) {
-      throw new NotFoundException(new MessageDto('La lista está vacía'));
-    }
-    return list;
+    private studentRepository: Repository<StudentEntity>,
+    private responseHandler: ResponseHandler,
+  ) {
+    super(
+      studentRepository.target,
+      studentRepository.manager,
+      studentRepository.queryRunner,
+    );
   }
 
-  async findById(id: number): Promise<StudentEntity> {
+  async getAll(): Promise<any> {
+    const studentList = await this.studentRepository.find();
+    if (!studentList.length) {
+      return this.responseHandler.handleFailure(
+        ConstantsMessages.EMPTY_STUDENTS_LIST,
+        HttpStatus.NOT_FOUND,
+        NotFoundException,
+      );
+    }
+    return this.responseHandler.handleSuccess(
+      ConstantsMessages.STATUS_OK,
+      HttpStatus.OK,
+      studentList,
+    );
+  }
+
+  async findById(id: number): Promise<any> {
     const student = await this.studentRepository.findOneBy({ id: id });
     if (!student) {
-      throw new NotFoundException(new MessageDto('No existe el estudiante'));
+      return this.responseHandler.handleFailure(
+        ConstantsMessages.STUDENT_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+        NotFoundException,
+      );
     }
-    return student;
+    return this.responseHandler.handleSuccess(
+      ConstantsMessages.STATUS_OK,
+      HttpStatus.OK,
+      student,
+    );
   }
 
-  async findByDocumentNumber(docNumber: number): Promise<StudentEntity> {
+  async findByDocumentNumber(docNumber: number): Promise<any> {
     const student = await this.studentRepository.findOneBy({
       docNumber: docNumber,
     });
@@ -40,34 +66,56 @@ export class StudentService {
   }
 
   async create(dto: StudentDto): Promise<any> {
-    const exists = await this.findByDocumentNumber(dto.docNumber);
-    if (exists)
-      throw new BadRequestException(
-        new MessageDto('Ya existe el número de documento'),
+    try {
+      const exists = await this.findByDocumentNumber(dto.docNumber);
+      if (exists) {
+        return this.responseHandler.handleFailure(
+          ConstantsMessages.STUDENT_ALREADY_EXISTS,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+          UnprocessableEntityException,
+        );
+      }
+      await this.studentRepository.save(dto);
+      return this.responseHandler.handleSuccess(
+        ConstantsMessages.STATUS_CREATED,
+        HttpStatus.CREATED,
+        dto,
       );
-    const student = this.studentRepository.create(dto);
-    await this.studentRepository.save(student);
-    return new MessageDto(
-      `Estudiante ${student.firstName} ${student.lastName} creado`,
-    );
+    } catch (error) {
+      return this.responseHandler.handleFailure(
+        error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        InternalServerErrorException,
+      );
+    }
   }
 
   async update(id: number, dto: StudentDto): Promise<any> {
-    const student = await this.findById(id);
-    if (!student)
-      throw new BadRequestException(new MessageDto('Ese estudiante no existe'));
-    const updatedBody = Object.assign(student, dto);
-    await this.studentRepository.save(updatedBody);
-    return new MessageDto(
-      `Estudiante ${student.firstName} ${student.lastName} actualizado`,
-    );
+    try {
+      const student = await this.findById(id);
+      if (student) {
+        await this.studentRepository.update(id, dto);
+        return this.responseHandler.handleSuccess(
+          ConstantsMessages.STATUS_OK,
+          HttpStatus.OK,
+          dto,
+        );
+      }
+    } catch (error) {
+      return this.responseHandler.handleFailure(
+        error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        InternalServerErrorException,
+      );
+    }
   }
 
   async deleteById(id: number): Promise<any> {
     const student = await this.findById(id);
-    await this.studentRepository.delete(student);
-    return new MessageDto(
-      `Estudiante ${student.firstName} ${student.lastName} eliminado`,
-    );
+    const message = `Estudiante ${student.data.firstName} ${student.data.lastName} eliminado`;
+    if (student) {
+      await this.studentRepository.delete(id);
+      return this.responseHandler.handleSuccess(message, HttpStatus.OK);
+    }
   }
 }
