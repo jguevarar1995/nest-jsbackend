@@ -1,7 +1,5 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserDto } from './dto/user.dto';
-import { UserEntity } from './user.entity';
 import { ResponseHandler } from 'src/common/response.handler';
 import { ConstantsMessages } from 'src/config/constants.messages';
 import { UserRepository } from './user.repository';
@@ -9,13 +7,12 @@ import { UserRepository } from './user.repository';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity)
-    private userRepository: UserRepository,
-    private responseHandler: ResponseHandler,
+    private readonly userRepository: UserRepository,
+    private readonly responseHandler: ResponseHandler,
   ) {}
 
   async performLogin(dto: UserDto): Promise<any> {
-    const user = await this.userRepository.findOneBy({ email: dto.email });
+    const user = await this.userRepository.findByEmail(dto.email);
     if (!user || dto.password !== user.pass) {
       return this.responseHandler.handleFailure(
         ConstantsMessages.UNAUTHORIZED_LOGIN,
