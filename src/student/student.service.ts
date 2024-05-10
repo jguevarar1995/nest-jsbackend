@@ -5,9 +5,8 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+
 import { StudentDto } from './dto/student.dto';
-import { StudentEntity } from './student.entity';
 import { ResponseHandler } from 'src/common/response.handler';
 import { ConstantsMessages } from 'src/config/constants.messages';
 import { StudentRepository } from './student.repository';
@@ -15,13 +14,12 @@ import { StudentRepository } from './student.repository';
 @Injectable()
 export class StudentService {
   constructor(
-    @InjectRepository(StudentEntity)
-    private studentRepository: StudentRepository,
-    private responseHandler: ResponseHandler,
+    private readonly studentRepository: StudentRepository,
+    private readonly responseHandler: ResponseHandler,
   ) {}
 
-  async getAll(): Promise<any> {
-    const studentList = await this.studentRepository.find();
+  async getAllStudents(): Promise<any> {
+    const studentList = await this.studentRepository.findAll();
     if (!studentList.length) {
       return this.responseHandler.handleFailure(
         ConstantsMessages.EMPTY_STUDENTS_LIST,
@@ -36,8 +34,8 @@ export class StudentService {
     );
   }
 
-  async findById(id: number): Promise<any> {
-    const student = await this.studentRepository.findOneBy({ id: id });
+  async getStudentById(id: number): Promise<any> {
+    const student = await this.studentRepository.findById(id);
     if (!student) {
       return this.responseHandler.handleFailure(
         ConstantsMessages.STUDENT_NOT_FOUND,
@@ -52,16 +50,11 @@ export class StudentService {
     );
   }
 
-  async findByDocumentNumber(docNumber: number): Promise<any> {
-    const student = await this.studentRepository.findOneBy({
-      docNumber: docNumber,
-    });
-    return student;
-  }
-
-  async create(dto: StudentDto): Promise<any> {
+  async createNewStudent(dto: StudentDto): Promise<any> {
     try {
-      const exists = await this.findByDocumentNumber(dto.docNumber);
+      const exists = await this.studentRepository.findByDocNumber(
+        dto.docNumber,
+      );
       if (exists) {
         return this.responseHandler.handleFailure(
           ConstantsMessages.STUDENT_ALREADY_EXISTS,
@@ -69,7 +62,7 @@ export class StudentService {
           UnprocessableEntityException,
         );
       }
-      await this.studentRepository.save(dto);
+      await this.studentRepository.createStudent(dto);
       return this.responseHandler.handleSuccess(
         ConstantsMessages.STATUS_CREATED,
         HttpStatus.CREATED,
@@ -84,11 +77,11 @@ export class StudentService {
     }
   }
 
-  async update(id: number, dto: StudentDto): Promise<any> {
+  async updateStudent(id: number, dto: StudentDto): Promise<any> {
     try {
-      const student = await this.findById(id);
+      const student = await this.getStudentById(id);
       if (student) {
-        await this.studentRepository.update(id, dto);
+        await this.studentRepository.updateStudent(id, dto);
         return this.responseHandler.handleSuccess(
           ConstantsMessages.STATUS_OK,
           HttpStatus.OK,
@@ -104,11 +97,11 @@ export class StudentService {
     }
   }
 
-  async deleteById(id: number): Promise<any> {
-    const student = await this.findById(id);
+  async deleteStudentById(id: number): Promise<any> {
+    const student = await this.getStudentById(id);
     const message = `Estudiante ${student.data.firstName} ${student.data.lastName} eliminado`;
     if (student) {
-      await this.studentRepository.delete(id);
+      await this.studentRepository.destroy(id);
       return this.responseHandler.handleSuccess(message, HttpStatus.OK);
     }
   }

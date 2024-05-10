@@ -19,27 +19,27 @@ export class StudentController {
 
   @Get()
   async getAll() {
-    return this.studentService.getAll();
+    return this.studentService.getAllStudents();
   }
 
   @Get(':id')
   async getOne(@Param('id', ParseIntPipe) id: number) {
-    return this.studentService.findById(id);
+    return this.studentService.getStudentById(id);
   }
 
   @UsePipes(new ValidationPipe({ whitelist: true }))
   @Post()
   async create(@Body() dto: StudentDto) {
-    return this.studentService.create(dto);
+    return this.studentService.createNewStudent(dto);
   }
 
   @Put(':id')
   async update(@Param('id', ParseIntPipe) id: number, @Body() dto: StudentDto) {
-    return this.studentService.update(id, dto);
+    return this.studentService.updateStudent(id, dto);
   }
 
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {
-    return this.studentService.deleteById(id);
+    return this.studentService.deleteStudentById(id);
   }
 }
