@@ -8,23 +8,17 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentDto } from './dto/student.dto';
 import { StudentEntity } from './student.entity';
-import { Repository } from 'typeorm';
 import { ResponseHandler } from 'src/common/response.handler';
 import { ConstantsMessages } from 'src/config/constants.messages';
+import { StudentRepository } from './student.repository';
 
 @Injectable()
-export class StudentService extends Repository<StudentEntity> {
+export class StudentService {
   constructor(
     @InjectRepository(StudentEntity)
-    private studentRepository: Repository<StudentEntity>,
+    private studentRepository: StudentRepository,
     private responseHandler: ResponseHandler,
-  ) {
-    super(
-      studentRepository.target,
-      studentRepository.manager,
-      studentRepository.queryRunner,
-    );
-  }
+  ) {}
 
   async getAll(): Promise<any> {
     const studentList = await this.studentRepository.find();
