@@ -7,7 +7,7 @@ services:
       - MYSQL_DATABASE=zeus
       - MYSQL_ROOT_PASSWORD=password
     ports:
-      - '3306:3306'
+      - '3307:3306'
     volumes:
       - db:/var/lib/mysql
   app:
@@ -15,7 +15,7 @@ services:
       - mysqldb
     build: .
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - DB_HOST=mysqldb
       - DB_PORT=3306  
